@@ -7,7 +7,8 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}",
-      "args": ["teams", "--org", "${input:org}"]
+      "args": ["teams", "--org", "ricardo-ch"],
+      "console": "integratedTerminal"
     },
     {
       "name": "town repos",
@@ -15,7 +16,8 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}",
-      "args": ["repos", "--org", "${input:org}", "--team", "${input:team}"]
+      "args": ["repos", "--org", "${input:org}", "--team", "${input:team}"],
+      "console": "integratedTerminal"
     }
   ],
   "inputs": [
