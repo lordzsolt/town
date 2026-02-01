@@ -88,7 +88,7 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 			continue
 		}
 
-		fmt.Printf("%s\n%s\n\n", repo.GetFullName(), repo.GetHTMLURL())
+		PrintRepoDetails(repo)
 		results = append(results, repo)
 	}
 
@@ -96,6 +96,44 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 	return results, nil
 }
 
-func PrintReposWithTeam(results []*github.Repository, team string) {
+// FetchReposWithoutCodeowners returns all repos that don't have a CODEOWNERS file
+func FetchReposWithoutCodeowners(ctx context.Context, client *github.Client, org string) ([]*github.Repository, error) {
+	repos, err := FetchAllRepos(ctx, client, org)
+	if err != nil {
+		return nil, fmt.Errorf("fetching repos: %w", err)
+	}
+
+	fmt.Printf("Scanning %d repositories for missing CODEOWNERS...\n\n", len(repos))
+
+	var results []*github.Repository
+
+	for _, repo := range repos {
+		if repo.GetArchived() {
+			continue // Skip archived repos
+		}
+
+		content, err := GetCodeownersContent(ctx, client, org, repo.GetName())
+		if err != nil {
+			// If we can't access, we can't determine, skip
+			continue
+		}
+
+		if content != "" {
+			continue // Has CODEOWNERS, skip
+		}
+
+		PrintRepoDetails(repo)
+		results = append(results, repo)
+	}
+
+	fmt.Println()
+	return results, nil
+}
+
+func PrintRepoCount(results []*github.Repository) {
 	fmt.Printf("\nTotal: %d repositories\n", len(results))
+}
+
+func PrintRepoDetails(repo *github.Repository) {
+	fmt.Printf("%s\n%s\n\n", repo.GetFullName(), repo.GetHTMLURL())
 }

@@ -12,24 +12,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var team string
+var (
+	team    string
+	noOwner bool
+)
 
 var reposCmd = &cobra.Command{
 	Use:   "repos",
-	Short: "Find repositories where a team is mentioned in CODEOWNERS",
-	Long: `Searches all repositories in the organization and returns those
-where the specified team is mentioned in the CODEOWNERS file.`,
+	Short: "Find repositories based on CODEOWNERS",
+	Long: `Searches all repositories in the organization. By default, returns those
+where the specified team is mentioned in the CODEOWNERS file.
+
+Use --no-owner to find repositories without a CODEOWNERS file.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if org == "" {
+			return fmt.Errorf("organization is required: use --org flag or set default_org in config")
+		}
+
+		// --no-owner mode doesn't need a team
+		if noOwner {
+			return nil
+		}
+
 		// Apply config default for team if not provided
 		if team == "" && cfg != nil {
 			team = cfg.DefaultTeam
 		}
 
-		if org == "" {
-			return fmt.Errorf("organization is required: use --org flag or set default_org in config")
-		}
 		if team == "" {
-			return fmt.Errorf("team is required: use --team flag or set default_team in config")
+			return fmt.Errorf("team is required: use --team flag or set default_team in config (or use --no-owner)")
 		}
 		return nil
 	},
@@ -41,19 +52,31 @@ where the specified team is mentioned in the CODEOWNERS file.`,
 		}
 
 		ctx := context.Background()
+
+		if noOwner {
+			repos, err := gh.FetchReposWithoutCodeowners(ctx, client, org)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error fetching repos:", err)
+				os.Exit(1)
+			}
+			gh.PrintRepoCount(repos)
+			return
+		}
+
 		repos, err := gh.FetchReposWithTeamInCodeowners(ctx, client, org, team)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error fetching repos:", err)
 			os.Exit(1)
 		}
 
-		gh.PrintReposWithTeam(repos, team)
+		gh.PrintRepoCount(repos)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(reposCmd)
 	reposCmd.Flags().StringVarP(&team, "team", "t", "", "Team name to search for in CODEOWNERS")
+	reposCmd.Flags().BoolVar(&noOwner, "no-owner", false, "List repositories without a CODEOWNERS file")
 
 	// Register completion for --team flag using cached teams
 	reposCmd.RegisterFlagCompletionFunc("team", completeTeamFlag)
