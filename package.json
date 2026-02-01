@@ -1,0 +1,10 @@
+{
+  "name": "town",
+  "version": "1.0.0",
+  "description": "CLI tool for exploring GitHub teams and repositories",
+  "scripts": {
+    "start": "go run .",
+    "build": "go build -o town",
+    "test": "go test ./..."
+  }
+}

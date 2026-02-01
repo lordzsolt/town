@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "town teams",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "args": ["teams", "--org", "${input:org}"]
+    },
+    {
+      "name": "town repos",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "args": ["repos", "--org", "${input:org}", "--team", "${input:team}"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "org",
+      "type": "promptString",
+      "description": "GitHub organization name"
+    },
+    {
+      "id": "team",
+      "type": "promptString",
+      "description": "Team name to search in CODEOWNERS"
+    }
+  ]
+}
