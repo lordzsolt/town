@@ -66,6 +66,8 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 		return nil, fmt.Errorf("fetching repos: %w", err)
 	}
 
+	fmt.Printf("Scanning %d repositories for team '%s'...\n\n", len(repos), team)
+
 	var results []*github.Repository
 
 	for _, repo := range repos {
@@ -86,19 +88,14 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 			continue
 		}
 
+		fmt.Printf("%s\n%s\n\n", repo.GetFullName(), repo.GetHTMLURL())
 		results = append(results, repo)
 	}
 
+	fmt.Println()
 	return results, nil
 }
 
 func PrintReposWithTeam(results []*github.Repository, team string) {
-	fmt.Printf("Repositories where '%s' is mentioned in CODEOWNERS:\n\n", team)
-
-	for _, r := range results {
-		fmt.Printf("- %s\n", r.GetFullName())
-		fmt.Printf("  URL: %s\n", r.GetHTMLURL())
-	}
-
 	fmt.Printf("\nTotal: %d repositories\n", len(results))
 }
