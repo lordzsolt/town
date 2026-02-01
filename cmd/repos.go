@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
+	"team-repos/internal"
 	gh "team-repos/internal/github"
 
 	"github.com/spf13/cobra"
@@ -52,4 +54,44 @@ where the specified team is mentioned in the CODEOWNERS file.`,
 func init() {
 	rootCmd.AddCommand(reposCmd)
 	reposCmd.Flags().StringVarP(&team, "team", "t", "", "Team name to search for in CODEOWNERS")
+
+	// Register completion for --team flag using cached teams
+	reposCmd.RegisterFlagCompletionFunc("team", completeTeamFlag)
+}
+
+// completeTeamFlag provides autocomplete suggestions for the --team flag
+func completeTeamFlag(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	// Determine org: check flag first, then config
+	completionOrg, _ := cmd.Flags().GetString("org")
+	if completionOrg == "" {
+		// Try loading config for default org
+		cfg, err := internal.LoadConfig()
+		if err == nil && cfg.DefaultOrg != "" {
+			completionOrg = cfg.DefaultOrg
+		}
+	}
+
+	if completionOrg == "" {
+		// Can't complete without knowing the org
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	// Load cached teams for this org
+	teams, err := internal.LoadCachedTeams(completionOrg)
+	if err != nil || teams == nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	// Filter teams by prefix if user has started typing
+	if toComplete != "" {
+		var filtered []string
+		for _, t := range teams {
+			if strings.HasPrefix(t, toComplete) {
+				filtered = append(filtered, t)
+			}
+		}
+		return filtered, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	return teams, cobra.ShellCompDirectiveNoFileComp
 }

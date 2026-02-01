@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"team-repos/internal"
 	gh "team-repos/internal/github"
 
 	"github.com/spf13/cobra"
@@ -32,6 +33,15 @@ var teamsCmd = &cobra.Command{
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error fetching teams:", err)
 			os.Exit(1)
+		}
+
+		// Cache team names for later use
+		teamNames := make([]string, len(teams))
+		for i, team := range teams {
+			teamNames[i] = team.GetSlug()
+		}
+		if err := internal.CacheTeams(org, teamNames); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to cache teams: %v\n", err)
 		}
 
 		gh.PrintTeams(teams, org)
