@@ -32,12 +32,10 @@ func FetchAllTeams(ctx context.Context, client *github.Client, org string) ([]*g
 func PrintTeams(teams []*github.Team, org string) {
 	fmt.Printf("Teams in organization '%s':\n\n", org)
 	for _, team := range teams {
-		fmt.Printf("- %s (ID: %d)\n", team.GetName(), team.GetID())
+		fmt.Printf("%s", team.GetName())
 		if desc := team.GetDescription(); desc != "" {
-			fmt.Printf("  Description: %s\n", desc)
+			fmt.Printf(": %s", desc)
 		}
-		fmt.Printf("  Slug: %s\n", team.GetSlug())
-		fmt.Printf("  Privacy: %s\n", team.GetPrivacy())
 		fmt.Println()
 	}
 	fmt.Printf("Total: %d teams\n", len(teams))
