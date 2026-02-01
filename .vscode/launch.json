@@ -7,7 +7,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}",
-      "args": ["teams", "--org", "ricardo-ch"],
+      "args": ["teams"],
       "console": "integratedTerminal"
     },
     {

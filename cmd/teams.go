@@ -14,6 +14,12 @@ var teamsCmd = &cobra.Command{
 	Use:   "teams",
 	Short: "List all teams in an organization",
 	Long:  `Fetches and displays all teams in the specified GitHub organization.`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if org == "" {
+			return fmt.Errorf("organization is required: use --org flag or set default_org in config")
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := gh.NewClient()
 		if err != nil {
