@@ -55,8 +55,7 @@ func CloneReposFromCache(repos []*cache.CachedRepo, cloneDir string) {
 
 	var cloned, skipped, failed int
 	for _, repo := range repos {
-		targetDir := filepath.Join(cloneDir, repo.Name)
-		err := cloneRepo(repo.Name, repo.CloneURL, targetDir)
+		err := cloneRepo(repo.Name, repo.CloneURL, cloneDir)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to clone %s: %v\n", repo.Name, err)
 			failed++
