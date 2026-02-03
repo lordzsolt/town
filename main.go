@@ -1,6 +1,6 @@
 package main
 
-import "team-repos/cmd"
+import "github.com/lordzsolt/town/cmd"
 
 func main() {
 	cmd.Execute()

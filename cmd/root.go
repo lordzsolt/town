@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"team-repos/internal"
+	"github.com/lordzsolt/town/internal"
 
 	"github.com/spf13/cobra"
 )
@@ -36,11 +36,21 @@ their teams, and find repositories owned by specific teams via CODEOWNERS.`,
 	},
 }
 
+// Execute runs the root command (for standalone usage)
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+// Command returns the root cobra command for embedding in other CLIs.
+// Example usage in parent CLI:
+//
+//	import "github.com/yourusername/town/cmd"
+//	parentCmd.AddCommand(cmd.Command())
+func Command() *cobra.Command {
+	return rootCmd
 }
 
 func init() {

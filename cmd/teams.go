@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"team-repos/internal/cache"
-	gh "team-repos/internal/github"
+	"github.com/lordzsolt/town/internal/cache"
+	gh "github.com/lordzsolt/town/internal/github"
 
 	"github.com/spf13/cobra"
 )

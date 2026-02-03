@@ -1,4 +1,4 @@
-module team-repos
+module github.com/lordzsolt/town
 
 go 1.24.0
 

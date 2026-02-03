@@ -5,7 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"team-repos/internal/cache"
+
+	"github.com/lordzsolt/town/internal/cache"
 
 	"github.com/google/go-github/v58/github"
 )
