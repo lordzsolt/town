@@ -20,11 +20,24 @@ var rootCmd = &cobra.Command{
 	Long: `town is a CLI tool that helps you explore GitHub organizations,
 their teams, and find repositories owned by specific teams via CODEOWNERS.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Check if config exists before loading
+		configExists := internal.ConfigExists()
+
 		// Load config
 		var err error
 		cfg, err = internal.LoadConfig()
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
+		}
+
+		// If org was provided via flag and no config exists, create one
+		if org != "" && !configExists {
+			cfg.DefaultOrg = org
+			if err := internal.SaveConfig(cfg); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not save config: %v\n", err)
+			} else {
+				fmt.Printf("Created config with default org: %s\n", org)
+			}
 		}
 
 		// Apply config defaults if flags not provided

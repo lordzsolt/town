@@ -76,3 +76,33 @@ func getConfigPaths() []string {
 
 	return paths
 }
+
+// ConfigExists returns true if a config file exists
+func ConfigExists() bool {
+	_, err := findConfigFile()
+	return err == nil
+}
+
+// SaveConfig writes the config to the preferred config file location.
+// Creates the config directory if it doesn't exist.
+func SaveConfig(cfg *Config) error {
+	paths := getConfigPaths()
+	if len(paths) == 0 {
+		return errors.New("no config paths found")
+	}
+
+	configPath := getConfigPaths()[0]
+
+	// Ensure directory exists
+	configDir := filepath.Dir(configPath)
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return err
+	}
+
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(configPath, data, 0644)
+}
