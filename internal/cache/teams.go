@@ -1,4 +1,4 @@
-package internal
+package cache
 
 import (
 	"bufio"
@@ -9,30 +9,10 @@ import (
 
 const teamsFileName = "teams"
 
-// GetCacheDir returns the cache directory following XDG Base Directory Specification.
-// Priority:
-//  1. $XDG_CACHE_HOME/town
-//  2. ~/.town/cache/ (fallback)
-func GetCacheDir() (string, error) {
-	cacheHome := os.Getenv("XDG_CACHE_HOME")
-	if cacheHome != "" {
-		return filepath.Join(cacheHome, appName), nil
-	}
-
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	// Check if ~/.town exists (legacy), use it if so
-	legacyDir := filepath.Join(home, "."+appName)
-	return filepath.Join(legacyDir, "cache"), nil
-}
-
 // CacheTeams stores team names to the cache file, one per line.
 // The file is stored as <cache_dir>/<org>/teams
 func CacheTeams(org string, teamNames []string) error {
-	cacheDir, err := GetCacheDir()
+	cacheDir, err := getCacheDir()
 	if err != nil {
 		return err
 	}
@@ -61,7 +41,7 @@ func CacheTeams(org string, teamNames []string) error {
 // LoadCachedTeams reads team names from the cache file.
 // Returns nil, nil if the cache file doesn't exist.
 func LoadCachedTeams(org string) ([]string, error) {
-	cacheDir, err := GetCacheDir()
+	cacheDir, err := getCacheDir()
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +74,7 @@ func LoadCachedTeams(org string) ([]string, error) {
 
 // GetTeamsCachePath returns the path to the teams cache file for an org.
 func GetTeamsCachePath(org string) (string, error) {
-	cacheDir, err := GetCacheDir()
+	cacheDir, err := getCacheDir()
 	if err != nil {
 		return "", err
 	}

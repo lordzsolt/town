@@ -41,7 +41,7 @@ func FetchAllRepos(ctx context.Context, client *github.Client, org string) ([]*g
 	return allRepos, nil
 }
 
-func GetCodeownersContent(ctx context.Context, client *github.Client, owner, repo string) (string, error) {
+func getCodeownersContent(ctx context.Context, client *github.Client, owner, repo string) (string, error) {
 	for _, path := range codeownersLocations {
 		content, _, _, err := client.Repositories.GetContents(ctx, owner, repo, path, nil)
 		if err != nil {
@@ -75,7 +75,7 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 			continue // Skip archived repos
 		}
 
-		content, err := GetCodeownersContent(ctx, client, org, repo.GetName())
+		content, err := getCodeownersContent(ctx, client, org, repo.GetName())
 		if err != nil {
 			continue // Skip repos we can't access
 		}
@@ -88,11 +88,12 @@ func FetchReposWithTeamInCodeowners(ctx context.Context, client *github.Client, 
 			continue
 		}
 
-		PrintRepoDetails(repo)
+		printRepoDetails(repo)
 		results = append(results, repo)
 	}
 
-	fmt.Println()
+	printRepoCount(results)
+
 	return results, nil
 }
 
@@ -112,7 +113,7 @@ func FetchReposWithoutCodeowners(ctx context.Context, client *github.Client, org
 			continue // Skip archived repos
 		}
 
-		content, err := GetCodeownersContent(ctx, client, org, repo.GetName())
+		content, err := getCodeownersContent(ctx, client, org, repo.GetName())
 		if err != nil {
 			// If we can't access, we can't determine, skip
 			continue
@@ -122,18 +123,21 @@ func FetchReposWithoutCodeowners(ctx context.Context, client *github.Client, org
 			continue // Has CODEOWNERS, skip
 		}
 
-		PrintRepoDetails(repo)
+		printRepoDetails(repo)
 		results = append(results, repo)
 	}
 
-	fmt.Println()
+	printRepoCount(results)
+
 	return results, nil
 }
 
-func PrintRepoCount(results []*github.Repository) {
+func printRepoCount(results []*github.Repository) {
+	fmt.Println()
 	fmt.Printf("\nTotal: %d repositories\n", len(results))
+	fmt.Println()
 }
 
-func PrintRepoDetails(repo *github.Repository) {
-	fmt.Printf("%s\n%s\n\n", repo.GetFullName(), repo.GetHTMLURL())
+func printRepoDetails(repo *github.Repository) {
+	fmt.Printf("%s\n%s\n\n", repo.GetName(), repo.GetHTMLURL())
 }
