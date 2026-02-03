@@ -70,9 +70,14 @@ func storeTokenInKeychain(token string) error {
 func promptForToken() (string, error) {
 	fmt.Print(`GitHub token not found. 
 Please visit https://github.com/settings/personal-access-tokens to create a new token.
-Make sure to select the following scopes:
-- Repository permissions: Contents
-- Organization permissions: Members
+
+Select:
+- Resource owner: Your organization
+- Repository access: All repositories
+
+Permissions
+- Repository permissions: Contents (read-only)
+- Organization permissions: Members (read-only)
 
 Please enter your GitHub personal access token: `)
 
