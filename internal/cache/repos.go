@@ -9,7 +9,7 @@ import (
 	"github.com/google/go-github/v58/github"
 )
 
-const cacheTTL = 15 * time.Minute
+const cacheTTL = 1 * time.Hour
 
 // ReposResult represents the cached result of a repos command run
 type ReposResult struct {

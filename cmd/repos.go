@@ -31,7 +31,7 @@ where the specified team is mentioned in the CODEOWNERS file.
 Use --no-owner to find repositories without a CODEOWNERS file.
 Use --clone to clone all matching repositories.
 
-Results are cached for 15 minutes to avoid unnecessary API calls.`,
+Results are cached for 1 hour to avoid unnecessary API calls.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if org == "" {
 			return fmt.Errorf("organization is required: use --org flag or set defaultOrg in config")
