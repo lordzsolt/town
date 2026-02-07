@@ -38,9 +38,10 @@ changelog:
 homebrew_casks:
   - repository:
       owner: lordzsolt
-      name: town
+      name: homebrew-town
       branch: main
-    directory: packaging
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    directory: Casks
     homepage: "https://github.com/lordzsolt/town"
     description: "CLI tool for exploring GitHub teams and repository ownership via CODEOWNERS"
     # Remove quarantine since binary is not signed/notarized
