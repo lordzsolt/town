@@ -15,11 +15,19 @@
 
 ## Installation
 
+### Homebrew (macOS/Linux)
+
+```bash
+brew install lordzsolt/town/town
+```
+
+### Go
+
 ```bash
 go install github.com/lordzsolt/town@latest
 ```
 
-Or build from source:
+### From source
 
 ```bash
 git clone https://github.com/lordzsolt/town.git
