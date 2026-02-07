@@ -15,20 +15,6 @@ const (
 	keyringUser    = "github-token"
 )
 
-// getTokenFromKeyring retrieves the GitHub token from the system keyring
-func getTokenFromKeyring() (string, error) {
-	token, err := keyring.Get(keyringService, keyringUser)
-	if err != nil {
-		return "", err
-	}
-	return token, nil
-}
-
-// storeTokenInKeyring stores the GitHub token in the system keyring
-func storeTokenInKeyring(token string) error {
-	return keyring.Set(keyringService, keyringUser, token)
-}
-
 // promptForToken asks the user to enter their GitHub token
 func promptForToken() (string, error) {
 	fmt.Print(`GitHub token not found. 
@@ -63,7 +49,7 @@ Please enter your GitHub personal access token: `)
 // getToken retrieves the GitHub token from keyring or prompts the user
 func getToken() (string, error) {
 	// Try keyring first
-	token, err := getTokenFromKeyring()
+	token, err := keyring.Get(keyringService, keyringUser)
 	if err == nil && token != "" {
 		return token, nil
 	}
@@ -75,7 +61,7 @@ func getToken() (string, error) {
 	}
 
 	// Store in keyring for future use
-	if err := storeTokenInKeyring(token); err != nil {
+	if err := keyring.Set(keyringService, keyringUser, token); err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: could not store token in keyring: %v\n", err)
 		// Continue anyway since we have the token
 	} else {
